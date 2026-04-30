@@ -18,24 +18,51 @@ def playing_area():
     pen.end_fill()
     
 class Head(Turtle):
-  def __init__(self, screen, body):
+  def __init__(self, screen):
     super().__init__()
-    pass
+    self.hideturtle()
+    self.speed(0)
+    self.shape("square")
+    self.color("Green")
+    self.penup()
+    self.showturtle()
+    self.alive = True
+    self.direction = "right"
+    screen.onkey(self.left, "a")
+    screen.onkey(self.right, "d")
+    screen.onkey(self.up, "w")
+    screen.onkey(self.down, "s")
+
+
 
   def up(self):
-    pass
+    if self.direction != "down":
+      self.setheading(90)
+      self.direction = "up"
 
   def down(self):
-    pass
+    if self.direction != "up":
+      self.setheading(270)
+      self.direction = "down"
 
   def left(self):
-    pass
+    if self.direction != "right":
+      self.setheading(180)
+      self.direction = "left"
 
   def right(self):
-    pass
+    if self.direction != "left":
+      self.setheading(0)
+      self.direction = "right"
 
   def move(self):
-    pass
+    self.forward(2)
+    if self.xcor() > 230 or self.xcor() < -230:
+        self.alive = False
+        self.hideturtle()
+    if self.ycor() > 230 or self.ycor() < -230:
+        self.alive = False
+        self.hideturtle()
     
   def die(self):
     pass
@@ -44,18 +71,29 @@ class Head(Turtle):
 class Segment(Turtle):
   def __init__(self, other):
     super().__init__()
-    pass
+    self.shape("square")
+    self.color(generate_color())
+    self.goto(other.pos())
 
   def move(self, other):
-    pass
+    for i in range(len(body)-1, 0, -1):
+      body[i].goto(body[i-1].pos())
+    if body:
+      body[0].goto(other.pos())
 
 class Apple(Turtle):
   def __init__(self):
     super().__init__()
-    pass
+    self.hideturtle()
+    self.speed(0)
+    self.shape("circle")
+    self.color("red")
+    self.penup()
+    self.goto(random.randint(-230, 230), random.randint(-230, 230))
+    self.showturtle()
 
   def relocate(self):
-    pass
+    self.goto(random.randint(-230, 230), random.randint(-230, 230))
 
 screen = Screen()
 screen.bgcolor("black")
@@ -66,11 +104,17 @@ screen.listen()
 body = []
 
 
-screen.exitonclick()
+playing_area()
 
+p1 = Head(screen)
+apple1 = Apple()
 
+while p1.alive:
+  p1.move()
+  if p1.distance(apple1) < 20:
+    apple1.relocate()
 
-
-
+  for segment in body:
+    segment.move(segment)
 
 screen.exitonclick()
