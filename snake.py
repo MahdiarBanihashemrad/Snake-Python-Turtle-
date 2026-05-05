@@ -1,6 +1,9 @@
 from turtle import *
 import random
 
+
+
+
 def generate_color():
     return f"#{random.randint(0, 0xFFFFFF):06x}"
 
@@ -17,13 +20,15 @@ def playing_area():
     pen.goto(-240,240)
     pen.end_fill()
     
+playing_area()
+
 class Head(Turtle):
   def __init__(self, screen):
     super().__init__()
     self.hideturtle()
     self.speed(0)
     self.shape("square")
-    self.color("Green")
+    self.color("black")
     self.penup()
     self.showturtle()
     self.alive = True
@@ -56,7 +61,7 @@ class Head(Turtle):
       self.direction = "right"
 
   def move(self):
-    self.forward(2)
+    self.forward(20)
     if self.xcor() > 230 or self.xcor() < -230:
         self.alive = False
         self.hideturtle()
@@ -71,15 +76,16 @@ class Head(Turtle):
 class Segment(Turtle):
   def __init__(self, other):
     super().__init__()
+    self.speed(0)
+    self.hideturtle()
+    self.penup()
     self.shape("square")
-    self.color(generate_color())
-    self.goto(other.pos())
+    self.color("green")
+    self.goto(other.xcor(),other.ycor())
+    self.showturtle()
 
   def move(self, other):
-    for i in range(len(body)-1, 0, -1):
-      body[i].goto(body[i-1].pos())
-    if body:
-      body[0].goto(other.pos())
+    self.goto(other.xcor(),other.ycor())
 
 class Apple(Turtle):
   def __init__(self):
@@ -95,26 +101,58 @@ class Apple(Turtle):
   def relocate(self):
     self.goto(random.randint(-230, 230), random.randint(-230, 230))
 
+
+
+def update():
+  if head.alive:
+    head.move()
+
+    for i in range(len(body) -1, 0, -1):
+      body[i].move(body[i-1])
+    # for segment in body:
+    #   segment.move(other=body[-1])
+
+    # if len(body) > 0:
+    #   body[0].goto(head.pos())
+
+    if head.distance(apple) < 20:
+      apple.relocate()
+      body.append(Segment(body[-1]))
+
+
+      for i in range(3, len(body)):
+        print(head.distance(body[i]))
+        if head.distance(body[i]) < 20:
+          head.alive = False
+          head.hideturtle()
+
+
+  screen.ontimer(update, 85)
+
+
+####################################################################################################################################################################
+
+
+
 screen = Screen()
 screen.bgcolor("black")
 screen.setup(520,520)
 # Key Binding. Connects key presses and mouse clicks with function calls
 screen.listen()
+screen.onkey(update, "space")
 
-body = []
+head = Head(screen)
+apple = Apple()
+body = [head]
 
 
-playing_area()
 
-p1 = Head(screen)
-apple1 = Apple()
 
-while p1.alive:
-  p1.move()
-  if p1.distance(apple1) < 20:
-    apple1.relocate()
 
-  for segment in body:
-    segment.move(segment)
+
+
+
+
+
 
 screen.exitonclick()
