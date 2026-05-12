@@ -105,27 +105,22 @@ class Apple(Turtle):
 
 def update():
   if head.alive:
-    head.move()
+    tail_position = body[-1].position()
 
     for i in range(len(body) -1, 0, -1):
       body[i].move(body[i-1])
-    # for segment in body:
-    #   segment.move(other=body[-1])
 
-    # if len(body) > 0:
-    #   body[0].goto(head.pos())
+    head.move()
 
     if head.distance(apple) < 20:
       apple.relocate()
       body.append(Segment(body[-1]))
+      body[-1].goto(tail_position)
 
-
-      for i in range(3, len(body)):
-        print(head.distance(body[i]))
-        if head.distance(body[i]) < 20:
-          head.alive = False
-          head.hideturtle()
-
+    for i in range(1, len(body)):
+      if head.distance(body[i]) < 15:
+        head.alive = False
+        head.hideturtle()
 
   screen.ontimer(update, 85)
 
